@@ -5,9 +5,10 @@ import java.util.stream.Collectors;
 
 public class Application {
 
+    private static InputView inputView = new InputView();
     public static void main(String[] args) {
         // TODO: 프로그램 구현
-        InputView inputView = new InputView();
+        System.out.println("다리길이");
         int bridgeSize = inputView.readBridgeSize();
 
         BridgeMaker bridgeMaker = new BridgeMaker(new BridgeRandomNumberGenerator());
@@ -23,18 +24,32 @@ public class Application {
 
         while (bridgeGame.playing()) {
             Direction moving = Direction.valueOf(inputView.readMoving());
+            System.out.println("d or u");
             CrossChecker checker = bridgeGame.move(moving, position);
-            if (CrossChecker.isFail(checker)) {
-                String gameCommand = inputView.readGameCommand();
-                if (gameCommand.equals("R")) {
-                    bridgeGame.retry();
-                }
-                if (gameCommand.equals("Q")) {
-                    break;
-                }
+            if (quit(bridgeGame, checker)) {
+                break;
             }
         }
 
 
+    }
+
+    private static boolean quit(BridgeGame bridgeGame, CrossChecker checker) {
+        if (CrossChecker.isFail(checker)) {
+            System.out.println("r or q");
+            String gameCommand = inputView.readGameCommand();
+            if (retryOrNot(bridgeGame, gameCommand)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean retryOrNot(BridgeGame bridgeGame, String gameCommand) {
+        GameCommand continueOrQuit = bridgeGame.retry(gameCommand);
+        if (continueOrQuit == GameCommand.Q) {
+            return true;
+        }
+        return false;
     }
 }
