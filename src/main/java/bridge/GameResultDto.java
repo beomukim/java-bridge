@@ -17,7 +17,7 @@ public class GameResultDto {
         return count;
     }
 
-    public Result getResult() {
-        return result;
+    public String getResultSuccessOrNot() {
+        return result.getResult();
     }
 }

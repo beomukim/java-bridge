@@ -60,4 +60,12 @@ public class BridgeGame {
     public boolean playing() {
         return bridge.size() > position.getStep();
     }
+
+    public boolean retryOrNot(String gameCommand) {
+        GameCommand continueOrQuit = retry(gameCommand);
+        if (continueOrQuit == GameCommand.Q) {
+            return true;
+        }
+        return false;
+    }
 }

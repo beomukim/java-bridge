@@ -25,8 +25,10 @@ public class BridgeController {
     }
 
     public void play() {
-        System.out.println("다리길이");
+        System.out.println("다리 건너기 게임을 시작합니다.\n");
+        System.out.println("다리의 길이를 입력해주세요.");
         int bridgeSize = inputView.readBridgeSize();
+        System.out.println();
 
         BridgeMaker bridgeMaker = new BridgeMaker(new BridgeRandomNumberGenerator());
         List<Direction> bridge = bridgeMaker.makeBridge(bridgeSize).stream().map(Direction::valueOf)
@@ -41,7 +43,7 @@ public class BridgeController {
         BridgeGame bridgeGame = new BridgeGame(bridge, position, tryCounter, user);
 
         while (bridgeGame.playing()) {
-            System.out.println("d or u");
+            System.out.println("이동할 칸을 선택해주세요. (위: U, 아래: D)");
             Direction moving = Direction.valueOf(inputView.readMoving());
             CrossChecker checker = bridgeGame.move(moving, position);
             outputView.printMap(user);
@@ -55,19 +57,11 @@ public class BridgeController {
 
     private boolean quit(BridgeGame bridgeGame, CrossChecker checker) {
         if (CrossChecker.isFail(checker)) {
-            System.out.println("r or q");
+            System.out.println("게임을 다시 시도할지 여부를 입력해주세요. (재시도: R, 종료: Q)");
             String gameCommand = inputView.readGameCommand();
-            if (retryOrNot(bridgeGame, gameCommand)) {
+            if (bridgeGame.retryOrNot(gameCommand)) {
                 return true;
             }
-        }
-        return false;
-    }
-
-    private boolean retryOrNot(BridgeGame bridgeGame, String gameCommand) {
-        GameCommand continueOrQuit = bridgeGame.retry(gameCommand);
-        if (continueOrQuit == GameCommand.Q) {
-            return true;
         }
         return false;
     }
