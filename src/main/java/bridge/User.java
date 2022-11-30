@@ -19,7 +19,7 @@ public class User {
     }
 
     public void reset() {
-        upBridge = new ArrayList<>();
-        downBridge = new ArrayList<>();
+        upBridge.clear();
+        downBridge.clear();
     }
 }

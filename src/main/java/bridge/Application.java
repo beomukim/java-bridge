@@ -18,7 +18,8 @@ public class Application {
 
         User user = new User();
         Position position = new Position();
-        BridgeGame bridgeGame = new BridgeGame(bridge, position, user);
+        TryCounter tryCounter = new TryCounter();
+        BridgeGame bridgeGame = new BridgeGame(bridge, position, tryCounter, user);
 
         while (bridgeGame.playing()) {
             Direction moving = Direction.valueOf(inputView.readMoving());

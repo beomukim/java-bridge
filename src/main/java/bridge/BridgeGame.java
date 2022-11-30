@@ -8,11 +8,13 @@ import java.util.List;
 public class BridgeGame {
     private List<Direction> bridge;
     private Position position;
+    private TryCounter tryCounter;
     private User user;
 
-    public BridgeGame(List<Direction> bridge, Position position, User user) {
+    public BridgeGame(List<Direction> bridge, Position position, TryCounter tryCounter, User user) {
         this.bridge = bridge;
         this.position = position;
+        this.tryCounter = tryCounter;
         this.user = user;
     }
 
