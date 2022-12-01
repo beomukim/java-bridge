@@ -1,22 +1,19 @@
 package bridge;
 
 public class GameResult {
-    private TryCounter tryCounter;
-    private Result result = Result.SUCCESS;
+    private int count;
+    private Result result;
 
-    public GameResult(TryCounter tryCounter) {
-        this.tryCounter = tryCounter;
-    }
-
-    public void gameFail() {
-        result = Result.FAIL;
-    }
-
-    public Result getResult() {
-        return result;
+    public GameResult(int count, Result result) {
+        this.count = count;
+        this.result = result;
     }
 
     public int getCount() {
-        return tryCounter.getCount();
+        return count;
+    }
+
+    public String getResult() {
+        return result.getResult();
     }
 }

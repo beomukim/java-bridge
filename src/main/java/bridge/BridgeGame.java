@@ -1,6 +1,7 @@
 package bridge;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 다리 건너기 게임을 관리하는 클래스
@@ -11,11 +12,12 @@ public class BridgeGame {
     private TryCounter tryCounter;
     private User user;
 
-    public BridgeGame(List<Direction> bridge, Position position, TryCounter tryCounter, User user) {
-        this.bridge = bridge;
-        this.position = position;
-        this.tryCounter = tryCounter;
-        this.user = user;
+
+    public BridgeGame(List<String> bridge) {
+        this.bridge = convertBridge(bridge);
+        this.position = new Position();
+        this.tryCounter = new TryCounter();
+        this.user = new User();
     }
 
     /**
@@ -25,7 +27,7 @@ public class BridgeGame {
      *
      * @return
      */
-    public CrossChecker move(Direction moving, Position position) {
+    public CrossChecker move(Direction moving) {
         Direction now = bridge.get(position.getStep());
         CrossChecker crossOrNot = check(now, moving);
         user.crossBridge(moving, crossOrNot);
@@ -67,5 +69,26 @@ public class BridgeGame {
             return true;
         }
         return false;
+    }
+
+    public void gameResult(Result result) {
+        if (result == Result.SUCCESS) {
+            user.gameSuccess();
+        }
+        if (result == Result.FAIL) {
+            user.gameFail();
+        }
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public GameResult gameResult() {
+        return new GameResult(tryCounter.getCount(), user.getResult());
+    }
+
+    private List<Direction> convertBridge(List<String> bridge) {
+        return bridge.stream().map(Direction::valueOf).collect(Collectors.toList());
     }
 }

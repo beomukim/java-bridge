@@ -5,15 +5,10 @@ import bridge.BridgeMaker;
 import bridge.BridgeRandomNumberGenerator;
 import bridge.CrossChecker;
 import bridge.Direction;
-import bridge.GameCommand;
-import bridge.GameResult;
 import bridge.InputView;
 import bridge.OutputView;
-import bridge.Position;
-import bridge.TryCounter;
+import bridge.Result;
 import bridge.User;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BridgeController {
     private InputView inputView;
@@ -25,43 +20,62 @@ public class BridgeController {
     }
 
     public void play() {
-        System.out.println("다리 건너기 게임을 시작합니다.\n");
-        System.out.println("다리의 길이를 입력해주세요.");
+        outputView.printStartMessage();
         int bridgeSize = inputView.readBridgeSize();
-        System.out.println();
 
+        BridgeGame bridgeGame = startGame(bridgeSize);
+        User user = bridgeGame.getUser();
+
+        move(bridgeGame, user);
+        gameResult(bridgeGame, user);
+    }
+
+    private static BridgeGame startGame(int bridgeSize) {
         BridgeMaker bridgeMaker = new BridgeMaker(new BridgeRandomNumberGenerator());
-        List<Direction> bridge = bridgeMaker.makeBridge(bridgeSize).stream().map(Direction::valueOf)
-                .collect(Collectors.toList());
+        BridgeGame bridgeGame = new BridgeGame(bridgeMaker.makeBridge(bridgeSize));
+        return bridgeGame;
+    }
 
-        System.out.println(bridge);
 
-        TryCounter tryCounter = new TryCounter();
-        GameResult gameResult = new GameResult(tryCounter);
-        User user = new User(gameResult);
-        Position position = new Position();
-        BridgeGame bridgeGame = new BridgeGame(bridge, position, tryCounter, user);
-
+    private void move(BridgeGame bridgeGame, User user) {
         while (bridgeGame.playing()) {
-            System.out.println("이동할 칸을 선택해주세요. (위: U, 아래: D)");
-            Direction moving = Direction.valueOf(inputView.readMoving());
-            CrossChecker checker = bridgeGame.move(moving, position);
-            outputView.printMap(user);
+            CrossChecker checker = getCrossChecker(bridgeGame, user);
             if (quit(bridgeGame, checker)) {
-                gameResult.gameFail();
+                bridgeGame.gameResult(Result.FAIL);
                 break;
             }
         }
-        outputView.printResult(user);
+    }
+
+    private void gameResult(BridgeGame bridgeGame, User user) {
+        if (!user.isFail()) {
+            bridgeGame.gameResult(Result.SUCCESS);
+        }
+        outputView.printResult(bridgeGame);
+    }
+
+    private CrossChecker getCrossChecker(BridgeGame bridgeGame, User user) {
+        outputView.printMovingMessage();
+        Direction moving = Direction.valueOf(inputView.readMoving());
+        CrossChecker checker = bridgeGame.move(moving);
+        outputView.printMap(user);
+        return checker;
     }
 
     private boolean quit(BridgeGame bridgeGame, CrossChecker checker) {
         if (CrossChecker.isFail(checker)) {
-            System.out.println("게임을 다시 시도할지 여부를 입력해주세요. (재시도: R, 종료: Q)");
-            String gameCommand = inputView.readGameCommand();
-            if (bridgeGame.retryOrNot(gameCommand)) {
+            if (retry(bridgeGame)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    private boolean retry(BridgeGame bridgeGame) {
+        outputView.printRestartMessage();
+        String gameCommand = inputView.readGameCommand();
+        if (bridgeGame.retryOrNot(gameCommand)) {
+            return true;
         }
         return false;
     }

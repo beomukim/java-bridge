@@ -1,7 +1,7 @@
 package bridge;
 
 public enum CrossChecker {
-    SUCCESS("O"), FAIL("X");
+    SUCCESS("O"), FAIL("X"), BLANK(" ");
 
     private String result;
 
