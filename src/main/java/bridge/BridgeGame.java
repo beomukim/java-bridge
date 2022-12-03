@@ -30,9 +30,13 @@ public class BridgeGame {
     public CrossChecker move(Direction moving) {
         Direction now = bridge.get(position.getStep());
         CrossChecker crossOrNot = check(now, moving);
+        crossBridge(moving, crossOrNot);
+        return crossOrNot;
+    }
+
+    private void crossBridge(Direction moving, CrossChecker crossOrNot) {
         user.crossBridge(moving, crossOrNot);
         position.increaseStep();
-        return crossOrNot;
     }
 
     /**
@@ -44,12 +48,16 @@ public class BridgeGame {
      */
     public GameCommand retry(String gameCommand) {
         if (GameCommand.continueGame(gameCommand)) {
-            user.reset();
-            position.reset();
-            tryCounter.increaseCount();
+            replayGame();
             return GameCommand.R;
         }
         return GameCommand.Q;
+    }
+
+    private void replayGame() {
+        user.reset();
+        position.reset();
+        tryCounter.increaseCount();
     }
 
     private CrossChecker check(Direction now, Direction moving) {
